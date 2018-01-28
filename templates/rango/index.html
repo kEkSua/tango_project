@@ -1,0 +1,54 @@
+{% extends 'rango/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    main page
+{% endblock %}
+
+{% block body_block %}
+    <div class="jumbotron">
+    <h1 class="display-3">Rango says...</h1>
+
+        {% if user.is_authenticated %}
+            <h4>Hello, {{ user.username }}</h4>
+        {% else %}
+            <h4>Hey there, partner!</h4> <br /><br />
+        {% endif %}
+    </div>
+    <div class="row-marketing">
+    <section class="row text-center placeholders">
+        <div class="col-lg-6">
+            <h4>Most liked categories:</h4>
+            <p>
+            {% if categories %}
+                <ul class="list-group">
+                {% for category in categories %}
+                <li class="list-group-item">
+                    <a href="{% url 'rango:show_category' category.slug %}"> {{ category.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <strong>There are no categories present.</strong>
+        {% endif %}
+            </p>
+        </div>
+        <div class="col-lg-6">
+            <h4>Most viewed pages:</h4>
+            <p>
+            {% if pages %}
+            <ul class="list-group">
+                {% for page in pages %}
+                <li class="list-group-item"><a href="{{ page.url }}"> {{ page.title }}</a></li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <strong>There are no pages present.</strong>
+            {% endif %}
+            </p>
+        </div>
+    </section>
+    </div>
+    <img src="{% static 'images/owl.jpg' %}" alt="Owl" />
+{% endblock %}
+
