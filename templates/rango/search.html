@@ -1,0 +1,23 @@
+{% extends 'rango/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %} Search {% endblock %}
+
+{% block body_block %}
+<div>
+    <h1>Search with Rango</h1>
+<br />
+<script>
+  (function() {
+    var cx = '014835545158769213932:ipzns-i6hkq';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+</script>
+<gcse:search></gcse:search>
+</div>
+{% endblock %}

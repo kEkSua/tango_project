@@ -178,5 +178,7 @@ def visitor_cookie_handler(request):
     request.session['visits'] = visits
 
 
+def search(request):
+    return render(request, 'rango/search.html')
 
 
