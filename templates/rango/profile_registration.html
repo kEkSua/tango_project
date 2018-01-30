@@ -1,0 +1,16 @@
+{% extends 'rango/base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% block title_block %}Add profile image{% endblock %}
+
+{% block body_block %}
+<form role="form" id="profile_register_form" method="post" enctype="multipart/form-data"
+      action="{% url 'rango:register_profile' %}">
+    <h2 class="form-signin-heading">Add your profile image</h2>
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button class="btn btn-primary" type="submit" name="submit">Update profile</button>
+</form>
+{% endblock %}
+

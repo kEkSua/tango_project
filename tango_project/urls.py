@@ -18,12 +18,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rango import views
-from registration import auth_urls
+from registration.backends.simple.views import RegistrationView
+
+
+class MyRegistrationView(RegistrationView):
+    success_url = 'rango:register_profile'
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('rango/', include('rango.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/register/', MyRegistrationView.as_view(), name='registration_register'),
     path('accounts/', include('registration.backends.simple.urls')),
     path('search/', views.search, name='search')
 

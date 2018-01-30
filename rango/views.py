@@ -6,12 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from registration.backends.default.views import ActivationView
+from registration.forms import User
 
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
-from rango.models import Page, Category
+from rango.models import Page, Category, UserProfile
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
+LOGGER.setLevel(logging.INFO)
 
 def index(request):
     request.session.set_test_cookie()
@@ -202,3 +204,44 @@ def track_url(request):
     LOGGER.info("No page_id in get string")
     return redirect(reverse('rango:index'))
 
+
+@login_required
+def register_profile(request):
+    if request.method == "POST":
+        profile_form = UserProfileForm(request.POST, request.FILES)
+
+        if profile_form.is_valid():
+            user_profile = profile_form.save(commit=False)
+            user_profile.user = request.user
+            user_profile.save()
+
+            return redirect('rango:index')
+        else:
+            print(profile_form.errors)
+    else:
+        profile_form = UserProfileForm()
+
+    context_dict = {'form': profile_form}
+
+    return render(request, 'rango/profile_registration.html', context_dict)
+
+
+@login_required
+def user_profile_view(request, username):
+    LOGGER.critical('11111111111111')
+    try:
+        user = User.objects.get(username=username)
+        LOGGER.critical(user.username)
+    except User.DoesNotExist:
+        return redirect('rango:index')
+
+    userprofile = UserProfile.objects.get_or_create(user=user)[0]
+    form = UserProfileForm({'website': userprofile.website, 'picture': userprofile.picture})
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
+        if form.is_valid():
+            form.save(commit=True)
+            return redirect('rango:profile', username)
+        else:
+            print(form.errors)
+    return render(request, 'rango/profile.html', {'userprofile': userprofile, 'selecteduser': user, 'form': form})
