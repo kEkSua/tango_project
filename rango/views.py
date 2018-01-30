@@ -1,13 +1,17 @@
 from datetime import datetime
+
+import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from rango.models import Page, Category
 
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 def index(request):
     request.session.set_test_cookie()
@@ -181,4 +185,20 @@ def visitor_cookie_handler(request):
 def search(request):
     return render(request, 'rango/search.html')
 
+
+def track_url(request):
+    page_id = None
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            page_id = request.GET['page_id']
+    if page_id:
+        try:
+            page = Page.objects.get(id=page_id)
+            page.views += 1
+            page.save()
+            return redirect(page.url)
+        except Exception:
+            return HttpResponse("Page id {0} not found".format(page_id))
+    LOGGER.info("No page_id in get string")
+    return redirect(reverse('rango:index'))
 
