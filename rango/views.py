@@ -236,11 +236,22 @@ def user_profile_view(request, username):
         return redirect('rango:index')
 
     userprofile = UserProfile.objects.get_or_create(user=user)[0]
+    LOGGER.critical(userprofile.website)
     form = UserProfileForm({'website': userprofile.website, 'picture': userprofile.picture})
+    # if request.method == "POST":
+    #     form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
+    #     if form.is_valid():
+    #         form.save(commit=True)
+    #         return redirect('rango:profile', username)
+    #     else:
+    #         print(form.errors)
     if request.method == "POST":
-        form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
+        form = UserProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save(commit=True)
+            user_profile = form.save(commit=False)
+            user_profile.user = user
+            user_profile.save()
+
             return redirect('rango:profile', username)
         else:
             print(form.errors)
