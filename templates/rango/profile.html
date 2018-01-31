@@ -5,7 +5,7 @@
 {% block title_block %}Profile{% endblock %}
 
 {% block body_block %}
-        <h1>Wellcome, {{ user.username }}, to your profile page!</h1>
+        <h1>Profile page of user "{{ selecteduser.username }}"</h1>
             <div class="row-marketing">
                 <section class="row text-center placeholders">
                     <h4>Your profile details:</h4>
@@ -13,11 +13,11 @@
                         {% if userprofile.website %}
                             Website: {{ userprofile.website }}
                         {% else %}
-                            no website registered to your account
+                            no website registered to account
                         {% endif %}
                     </li></ul></div>
                     <div class="col-lg-6">
-                        <img src="{{ userprofile.picture }}" alt="No profile image:(">
+                        <img src="{{ MEDIA_URL }}{{ userprofile.picture }}" alt="No profile image:(">
                     </div>
                     <div class="col-lg-6">
                         <ul class="list-group">
@@ -28,11 +28,13 @@
                     </div>
                 </section>
             </div>
+    {% if user.username == selecteduser.username  or user.username == 'admin' %}
     <form role="form" id="profile_register_form" method="post" enctype="multipart/form-data"
-          action="{% url 'rango:register_profile' %}">
+          action="{% url 'rango:profile' user.username %}">
     <h2 class="form-signin-heading">Edit your profile here</h2>
     {% csrf_token %}
     {% bootstrap_form form %}
     <button class="btn btn-primary" type="submit" name="submit">Update profile</button>
 </form>
+    {% endif %}
 {% endblock %}

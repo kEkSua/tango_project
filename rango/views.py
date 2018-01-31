@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from registration.backends.default.views import ActivationView
 from registration.forms import User
 
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
@@ -14,6 +13,7 @@ from rango.models import Page, Category, UserProfile
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
+
 
 def index(request):
     request.session.set_test_cookie()
@@ -45,7 +45,7 @@ def show_category(request, category_name_slug):
 
     try:
         category = Category.objects.get(slug=category_name_slug)
-        pages = Page.objects.filter(category=category)
+        pages = Page.objects.filter(category=category).order_by('-views')
         context_dict['category'] = category
         context_dict['pages'] = pages
     except Category.DoesNotExist:
@@ -228,31 +228,26 @@ def register_profile(request):
 
 @login_required
 def user_profile_view(request, username):
-    LOGGER.critical('11111111111111')
     try:
         user = User.objects.get(username=username)
-        LOGGER.critical(user.username)
     except User.DoesNotExist:
         return redirect('rango:index')
 
     userprofile = UserProfile.objects.get_or_create(user=user)[0]
     LOGGER.critical(userprofile.website)
     form = UserProfileForm({'website': userprofile.website, 'picture': userprofile.picture})
-    # if request.method == "POST":
-    #     form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
-    #     if form.is_valid():
-    #         form.save(commit=True)
-    #         return redirect('rango:profile', username)
-    #     else:
-    #         print(form.errors)
     if request.method == "POST":
-        form = UserProfileForm(request.POST, request.FILES)
+        form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
         if form.is_valid():
-            user_profile = form.save(commit=False)
-            user_profile.user = user
-            user_profile.save()
-
+            form.save(commit=True)
             return redirect('rango:profile', username)
         else:
             print(form.errors)
     return render(request, 'rango/profile.html', {'userprofile': userprofile, 'selecteduser': user, 'form': form})
+
+
+@login_required
+def list_profiles(request):
+    userprofile_list = UserProfile.objects.all()
+
+    return render(request, 'rango/list_profiles.html', {'userprofile_list' : userprofile_list})

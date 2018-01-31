@@ -17,6 +17,6 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('profile/<username>', views.user_profile_view, name='profile'),
     path('goto/', views.track_url, name='goto'),
-
+    path('profiles/', views.list_profiles, name='list_profiles'),
 ]
 
