@@ -249,5 +249,18 @@ def user_profile_view(request, username):
 @login_required
 def list_profiles(request):
     userprofile_list = UserProfile.objects.all()
-
     return render(request, 'rango/list_profiles.html', {'userprofile_list' : userprofile_list})
+
+
+@login_required
+def like_category(request):
+    if request.method == 'GET':
+        cat_id = request.GET['category_id']
+        likes = 0
+        if cat_id:
+            cat = Category.objects.get(id=int(cat_id))
+            if cat:
+                cat.likes += 1
+                likes = cat.likes
+                cat.save()
+    return HttpResponse(likes)
