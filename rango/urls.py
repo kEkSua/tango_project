@@ -19,5 +19,6 @@ urlpatterns = [
     path('goto/', views.track_url, name='goto'),
     path('profiles/', views.list_profiles, name='list_profiles'),
     path('like/', views.like_category, name='like_category'),
+    path('suggest/', views.suggest_category, name='suggest_category'),
 ]
 
